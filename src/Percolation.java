@@ -77,7 +77,7 @@ public class Percolation {
         int Index = toIndex(row,col);
         if (col == 1)
             return;
-        if (isOpen(row,col)) {
+        if (isOpen(row,col-1)) {
             UnionFind.union(Index,toIndex(row,col-1));
         }
     }
