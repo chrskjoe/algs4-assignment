@@ -38,7 +38,7 @@ public class Percolation {
      */
     private int toIndex(int row, int col) {
         // considered virtual sites
-        return ((col-1)*N+row);
+        return ((row-1)*N+col);
     }
 
     /**
@@ -51,23 +51,23 @@ public class Percolation {
     private void connectUP(int row, int col) {
         // if at first row, connect to TopSite;
         int Index = toIndex(row,col);
-        if (col == 1) {
+        if (row == 1) {
         //if (row ==1) {
             UnionFind.union(TopSiteIndex,Index);
         } else {
-            if (isOpen(row, col-1))
-                UnionFind.union(Index,toIndex(row,col-1));
+            if (isOpen(row-1, col))
+                UnionFind.union(Index,toIndex(row-1,col));
         }
     }
 
     private void connectDown(int row, int col) {
         // if at bottom row, connect to BottomSite
         int Index = toIndex(row,col);
-        if (col == N) {
+        if (row == N) {
             UnionFind.union(BottomSiteIndex, Index);
         } else {
-            if (isOpen(row,col+1)) {
-                UnionFind.union(Index,toIndex(row,col+1));
+            if (isOpen(row+1,col)) {
+                UnionFind.union(Index,toIndex(row+1,col));
             }
         }
     }
@@ -75,20 +75,20 @@ public class Percolation {
     private void connectLeft(int row, int col) {
         // attention to the most left border
         int Index = toIndex(row,col);
-        if (row == 1)
+        if (col == 1)
             return;
-        if (isOpen(row-1,col)) {
-            UnionFind.union(row,toIndex(row-1,col));
+        if (isOpen(row,col)) {
+            UnionFind.union(Index,toIndex(row,col-1));
         }
     }
 
     private  void connectRight(int row, int col) {
         // attention to the most right boarder
         int Index = toIndex(row,col);
-        if (row == N)
+        if (col == N)
             return;
-        if (isOpen(row+1,col)) {
-            UnionFind.union(row,toIndex(row-1,col));
+        if (isOpen(row,col+1)) {
+            UnionFind.union(Index,toIndex(row,col+1));
         }
     }
 
