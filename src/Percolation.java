@@ -1,4 +1,3 @@
-import edu.princeton.cs.algs4.UF;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
@@ -9,15 +8,17 @@ public class Percolation {
     // number of open sites
     private int numOpen;
     private int [] id;
-    // 0 represents closed, 1 represents opened, 2 represents full;
+    // 0 represents closed, 1 represents opened;
     private int [] state;
     private WeightedQuickUnionUF UnionFind;
+    private WeightedQuickUnionUF SubUnionFind;
 
     public Percolation(int n) {
         N = n;
         numOpen = 0;
         state = new int[n*n+2];
-        UnionFind = new WeightedQuickUnionUF(n*n+2);
+        UnionFind = new WeightedQuickUnionUF(N*N+2);
+        SubUnionFind = new WeightedQuickUnionUF(N*N+2);
 
         for (int i = 0; i < state.length; i++)
             state[i] = 0;
@@ -44,8 +45,8 @@ public class Percolation {
     /**
      * connect p and q in UF
      */
-    private boolean connected(int p, int q) {
-        return UnionFind.find(p) == UnionFind.find(q);
+    private boolean connected(WeightedQuickUnionUF UF, int p, int q) {
+        return UF.find(p) == UF.find(q);
     }
 
     private void connectUP(int row, int col) {
@@ -54,9 +55,11 @@ public class Percolation {
         if (row == 1) {
         //if (row ==1) {
             UnionFind.union(TopSiteIndex,Index);
+            SubUnionFind.union(TopSiteIndex,Index);
         } else {
             if (isOpen(row-1, col))
                 UnionFind.union(Index,toIndex(row-1,col));
+                SubUnionFind.union(Index,toIndex(row-1,col));
         }
     }
 
@@ -68,6 +71,7 @@ public class Percolation {
         } else {
             if (isOpen(row+1,col)) {
                 UnionFind.union(Index,toIndex(row+1,col));
+                SubUnionFind.union(Index,toIndex(row+1,col));
             }
         }
     }
@@ -79,6 +83,7 @@ public class Percolation {
             return;
         if (isOpen(row,col-1)) {
             UnionFind.union(Index,toIndex(row,col-1));
+            SubUnionFind.union(Index,toIndex(row,col-1));
         }
     }
 
@@ -89,6 +94,7 @@ public class Percolation {
             return;
         if (isOpen(row,col+1)) {
             UnionFind.union(Index,toIndex(row,col+1));
+            SubUnionFind.union(Index,toIndex(row,col+1));
         }
     }
 
@@ -107,7 +113,8 @@ public class Percolation {
     }
 
     public boolean isFull(int row, int col) {
-        return connected(TopSiteIndex,toIndex(row,col));
+        return connected(UnionFind,TopSiteIndex,toIndex(row, col))
+                && connected(SubUnionFind, TopSiteIndex, toIndex(row, col));
     }
 
     public int numberOfOpenSites() {
@@ -115,6 +122,6 @@ public class Percolation {
     }
 
     public boolean percolates() {
-        return connected(TopSiteIndex,BottomSiteIndex);
+        return UnionFind.find(TopSiteIndex) == UnionFind.find(BottomSiteIndex);
     }
 }
