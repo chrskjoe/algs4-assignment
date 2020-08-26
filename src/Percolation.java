@@ -14,6 +14,9 @@ public class Percolation {
     private WeightedQuickUnionUF SubUnionFind;
 
     public Percolation(int n) {
+        if (n<=0)
+            throw new IllegalArgumentException();
+
         N = n;
         numOpen = 0;
         state = new int[n*n+2];
@@ -98,7 +101,13 @@ public class Percolation {
         }
     }
 
+    private void check(int row, int col) {
+        if (row < 1 || row > N || col < 1 || row > 1 )
+            throw new IllegalArgumentException();
+    }
+
     public void open(int row, int col) {
+        check(row,col);
         connectUP(row,col);
         connectDown(row,col);
         connectLeft(row,col);
@@ -109,10 +118,12 @@ public class Percolation {
     }
 
     public boolean isOpen(int row, int col) {
+        check(row,col);
         return state[toIndex(row,col)] == 1;
     }
 
     public boolean isFull(int row, int col) {
+        check(row,col);
         return connected(UnionFind,TopSiteIndex,toIndex(row, col))
                 && connected(SubUnionFind, TopSiteIndex, toIndex(row, col));
     }
