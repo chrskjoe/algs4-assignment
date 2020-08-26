@@ -8,6 +8,8 @@ public class PercolationStats {
     private int T;
 
     public PercolationStats(int n, int trials) {
+        if (n <= 0 || trials <= 0)
+            throw new IllegalArgumentException();
         T = trials;
         threshold = new double[T];
         for (int i = 0; i < trials; i++) {
@@ -29,6 +31,8 @@ public class PercolationStats {
     }
 
     public double stddev() {
+        if (T==1)
+            return Double.NaN;
         return StdStats.stddev(threshold);
     }
 
