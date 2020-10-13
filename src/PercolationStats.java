@@ -45,7 +45,7 @@ public class PercolationStats {
         return (mean() + (factorForConfidence*stddev()/Math.sqrt(trials)));
     }
 
-    public final void show() {
+    private void show() {
         StdOut.printf("mean\t\t\t\t\t= %f\nstddev\t\t\t\t\t= %f\n95%% confidence interval\t= %f, %f\n",
                 mean(), stddev(), confidenceLo(), confidenceHi());
     }

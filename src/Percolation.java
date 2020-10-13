@@ -107,22 +107,22 @@ public final class Percolation {
         numOpen += 1;
     }
 
-    public final boolean isOpen(int row, int col) {
+    public boolean isOpen(int row, int col) {
         check(row,col);
         return state[toIndex(row, col)];
     }
 
-    public final boolean isFull(int row, int col) {
+    public boolean isFull(int row, int col) {
         check(row,col);
         return connected(unionFind,topSiteIndex,toIndex(row, col))
                 && connected(subUnionFind, topSiteIndex, toIndex(row, col));
     }
 
-    public final int numberOfOpenSites() {
+    public int numberOfOpenSites() {
         return numOpen;
     }
 
-    public final boolean percolates() {
+    public boolean percolates() {
         return unionFind.find(topSiteIndex) == unionFind.find(bottomSiteIndex);
     }
 }
