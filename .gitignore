@@ -1,5 +1,7 @@
 *.iml
 *.txt
 *.png
+*.zip
 .idea/
 out/
+percolation/
