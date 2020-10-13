@@ -96,7 +96,7 @@ public final class Percolation {
             throw new IllegalArgumentException();
     }
 
-    public final void open(int row, int col) {
+    public void open(int row, int col) {
         check(row,col);
         connectUP(row,col);
         connectDown(row,col);
