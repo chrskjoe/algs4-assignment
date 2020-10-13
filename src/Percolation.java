@@ -1,138 +1,128 @@
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
-public class Percolation {
-    // N-by-N grid
-    private int N;
-    private int TopSiteIndex;
-    private int BottomSiteIndex;
+import java.util.Arrays;
+
+public final class Percolation {
+    // sizeN-by-sizeN grid
+    private final int sizeN;
+    private final int topSiteIndex;
+    private final int bottomSiteIndex;
     // number of open sites
     private int numOpen;
-    private int [] id;
     // 0 represents closed, 1 represents opened;
-    private int [] state;
-    private WeightedQuickUnionUF UnionFind;
-    private WeightedQuickUnionUF SubUnionFind;
+    private final boolean [] state;
+    private final WeightedQuickUnionUF unionFind;
+    private final WeightedQuickUnionUF subUnionFind;
 
-    public Percolation(int n) {
-        if (n<=0)
+    public Percolation(int sizeN) {
+        if (sizeN <= 0)
             throw new IllegalArgumentException();
 
-        N = n;
+        this.sizeN = sizeN;
         numOpen = 0;
-        state = new int[n*n+2];
-        UnionFind = new WeightedQuickUnionUF(N*N+2);
-        SubUnionFind = new WeightedQuickUnionUF(N*N+2);
+        state = new boolean[sizeN * sizeN +2];
+        unionFind = new WeightedQuickUnionUF(this.sizeN * this.sizeN +2);
+        subUnionFind = new WeightedQuickUnionUF(this.sizeN * this.sizeN +2);
 
-        for (int i = 0; i < state.length; i++)
-            state[i] = 0;
+        Arrays.fill(state, false);
 
         // open virtual sites;
-        state[0] = 1;
-        state[N*N+1] = 1;
-        TopSiteIndex = 0;
-        BottomSiteIndex = state.length-1;
+        state[0] = true;
+        state[this.sizeN * this.sizeN +1] = true;
+        topSiteIndex = 0;
+        bottomSiteIndex = state.length-1;
     }
 
-    /**
-     * Return the index for the state[] array
-     *
-     * ! haven't considered the connor cases
-     * @param
-     * @throws
-     */
     private int toIndex(int row, int col) {
         // considered virtual sites
-        return ((row-1)*N+col);
+        return ((row-1)* sizeN +col);
     }
 
-    /**
-     * connect p and q in UF
-     */
     private boolean connected(WeightedQuickUnionUF UF, int p, int q) {
         return UF.find(p) == UF.find(q);
     }
 
     private void connectUP(int row, int col) {
         // if at first row, connect to TopSite;
-        int Index = toIndex(row,col);
+        int index = toIndex(row, col);
         if (row == 1) {
-        //if (row ==1) {
-            UnionFind.union(TopSiteIndex,Index);
-            SubUnionFind.union(TopSiteIndex,Index);
+        // if (row ==1) {
+            unionFind.union(topSiteIndex,index);
+            subUnionFind.union(topSiteIndex,index);
         } else {
             if (isOpen(row-1, col))
-                UnionFind.union(Index,toIndex(row-1,col));
-                SubUnionFind.union(Index,toIndex(row-1,col));
+                unionFind.union(index, toIndex(row-1,col));
+                subUnionFind.union(index, toIndex(row-1,col));
         }
     }
 
     private void connectDown(int row, int col) {
         // if at bottom row, connect to BottomSite
-        int Index = toIndex(row,col);
-        if (row == N) {
-            UnionFind.union(BottomSiteIndex, Index);
+        int index = toIndex(row, col);
+        if (row == sizeN) {
+            unionFind.union(bottomSiteIndex, index);
         } else {
-            if (isOpen(row+1,col)) {
-                UnionFind.union(Index,toIndex(row+1,col));
-                SubUnionFind.union(Index,toIndex(row+1,col));
+            if (isOpen(row+1, col)) {
+                unionFind.union(index, toIndex(row+1, col));
+                subUnionFind.union(index, toIndex(row+1, col));
             }
         }
     }
 
     private void connectLeft(int row, int col) {
         // attention to the most left border
-        int Index = toIndex(row,col);
+        int index = toIndex(row, col);
         if (col == 1)
             return;
-        if (isOpen(row,col-1)) {
-            UnionFind.union(Index,toIndex(row,col-1));
-            SubUnionFind.union(Index,toIndex(row,col-1));
+        if (isOpen(row, col-1)) {
+            unionFind.union(index,toIndex(row, col-1));
+            subUnionFind.union(index,toIndex(row, col-1));
         }
     }
 
     private  void connectRight(int row, int col) {
         // attention to the most right boarder
         int Index = toIndex(row,col);
-        if (col == N)
+        if (col == sizeN)
             return;
         if (isOpen(row,col+1)) {
-            UnionFind.union(Index,toIndex(row,col+1));
-            SubUnionFind.union(Index,toIndex(row,col+1));
+            unionFind.union(Index,toIndex(row,col+1));
+            subUnionFind.union(Index,toIndex(row,col+1));
         }
     }
 
     private void check(int row, int col) {
-        if (row < 1 || row > N || col < 1 || row > 1 )
+        if (row < 1 || row > sizeN || col < 1 || col > sizeN)
             throw new IllegalArgumentException();
     }
 
-    public void open(int row, int col) {
+    public final void open(int row, int col) {
         check(row,col);
         connectUP(row,col);
         connectDown(row,col);
         connectLeft(row,col);
         connectRight(row,col);
 
-        state[toIndex(row,col)] = 1;
+        state[toIndex(row,col)] = true;
         numOpen += 1;
     }
 
-    public boolean isOpen(int row, int col) {
+    public final boolean isOpen(int row, int col) {
         check(row,col);
-        return state[toIndex(row,col)] == 1;
+        return state[toIndex(row, col)];
     }
 
-    public boolean isFull(int row, int col) {
+    public final boolean isFull(int row, int col) {
         check(row,col);
-        return connected(UnionFind,TopSiteIndex,toIndex(row, col))
-                && connected(SubUnionFind, TopSiteIndex, toIndex(row, col));
+        return connected(unionFind,topSiteIndex,toIndex(row, col))
+                && connected(subUnionFind, topSiteIndex, toIndex(row, col));
     }
 
-    public int numberOfOpenSites() {
+    public final int numberOfOpenSites() {
         return numOpen;
     }
 
-    public boolean percolates() {
-        return UnionFind.find(TopSiteIndex) == UnionFind.find(BottomSiteIndex);
+    public final boolean percolates() {
+        return unionFind.find(topSiteIndex) == unionFind.find(bottomSiteIndex);
     }
 }
