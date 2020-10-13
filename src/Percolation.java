@@ -1,7 +1,5 @@
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
-import java.util.Arrays;
-
 public final class Percolation {
     // sizeN-by-sizeN grid
     private final int sizeN;
@@ -24,7 +22,8 @@ public final class Percolation {
         unionFind = new WeightedQuickUnionUF(this.sizeN * this.sizeN +2);
         subUnionFind = new WeightedQuickUnionUF(this.sizeN * this.sizeN +2);
 
-        Arrays.fill(state, false);
+        for (int i = 0; i < state.length; i++)
+            state[i] = false;
 
         // open virtual sites;
         state[0] = true;
